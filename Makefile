@@ -1,5 +1,5 @@
-platform	:= k210
-#platform	:= qemu
+#platform	:= k210
+platform	:= qemu
 # mode := debug
 mode := release
 K=kernel
@@ -65,8 +65,8 @@ else
 RUSTSBI = ./bootloader/SBI/sbi-qemu
 endif
 
-# TOOLPREFIX	:= riscv64-unknown-elf-
-TOOLPREFIX	:= riscv64-linux-gnu-
+TOOLPREFIX	:= riscv64-unknown-elf-
+#TOOLPREFIX	:= riscv64-linux-gnu-
 CC = $(TOOLPREFIX)gcc
 AS = $(TOOLPREFIX)gas
 LD = $(TOOLPREFIX)ld
@@ -140,7 +140,7 @@ QEMUOPTS += -bios $(RUSTSBI)
 QEMUOPTS += -drive file=fs.img,if=none,format=raw,id=x0 
 QEMUOPTS += -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
 
-run: build
+run: build fs.img
 ifeq ($(platform), k210)
 	@$(OBJCOPY) $T/kernel --strip-all -O binary $(image)
 	@$(OBJCOPY) $(RUSTSBI) --strip-all -O binary $(k210)
@@ -204,6 +204,8 @@ UPROGS=\
 	$U/_usertests\
 	$U/_strace\
 	$U/_mv\
+	$U/_getppid_test\
+
 
 	# $U/_forktest\
 	# $U/_ln\
@@ -218,11 +220,11 @@ dst=/mnt
 # @sudo cp $U/_init $(dst)/init
 # @sudo cp $U/_sh $(dst)/sh
 # Make fs image
-fs: $(UPROGS)
-	@if [ ! -f "fs.img" ]; then \
-		echo "making fs image..."; \
-		dd if=/dev/zero of=fs.img bs=512k count=512; \
-		mkfs.vfat -F 32 fs.img; fi
+fs.img: $(UPROGS)
+		rm -f fs.img
+		echo "making fs image..."
+		dd if=/dev/zero of=fs.img bs=512k count=512
+		mkfs.vfat -F 32 fs.img
 	@sudo mount fs.img $(dst)
 	@if [ ! -d "$(dst)/bin" ]; then sudo mkdir $(dst)/bin; fi
 	@sudo cp README $(dst)/README

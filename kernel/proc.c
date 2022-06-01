@@ -353,6 +353,9 @@ fork(void)
   np->sz = p->sz;
 
   np->parent = p;
+  printf("np, pid: %d\n", np->pid);
+  printf("p, pid: %d\n", p->pid);
+
 
   // copy tracing mask from parent.
   np->tmask = p->tmask;
