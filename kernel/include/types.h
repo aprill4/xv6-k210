@@ -12,7 +12,9 @@ typedef unsigned int  uint32;
 typedef unsigned long uint64;
 
 typedef unsigned long uintptr_t;
-typedef uint64 pde_t;
+typedef unsigned long pde_t;
+
+typedef unsigned long clock_t;
 
 // #define NULL ((void *)0)
 #define NULL 0

@@ -221,7 +221,7 @@ dst=/mnt
 # @sudo cp $U/_sh $(dst)/sh
 # Make fs image
 fs.img: $(UPROGS)
-		rm -f fs.img
+		rm fs.img
 		echo "making fs image..."
 		dd if=/dev/zero of=fs.img bs=512k count=512
 		mkfs.vfat -F 32 fs.img

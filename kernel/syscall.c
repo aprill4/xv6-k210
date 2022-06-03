@@ -98,7 +98,6 @@ extern uint64 sys_exit(void);
 extern uint64 sys_fork(void);
 extern uint64 sys_fstat(void);
 extern uint64 sys_getpid(void);
-extern uint64 sys_getppid(void);
 extern uint64 sys_kill(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_open(void);
@@ -117,6 +116,9 @@ extern uint64 sys_remove(void);
 extern uint64 sys_trace(void);
 extern uint64 sys_sysinfo(void);
 extern uint64 sys_rename(void);
+
+extern uint64 sys_times(void);
+extern uint64 sys_getppid(void);
 
 static uint64 (*syscalls[])(void) = {
   [SYS_fork]        sys_fork,
@@ -145,7 +147,9 @@ static uint64 (*syscalls[])(void) = {
   [SYS_trace]       sys_trace,
   [SYS_sysinfo]     sys_sysinfo,
   [SYS_rename]      sys_rename,
-  [SYS_getppid]      sys_getppid,
+
+  [SYS_getppid]     sys_getppid,
+  [SYS_times]       sys_times,
 };
 
 static char *sysnames[] = {
@@ -175,7 +179,9 @@ static char *sysnames[] = {
   [SYS_trace]       "trace",
   [SYS_sysinfo]     "sysinfo",
   [SYS_rename]      "rename",
-  [SYS_getppid]      "getppid",
+
+  [SYS_getppid]     "getppid",
+  [SYS_times]       "times",
 };
 
 void

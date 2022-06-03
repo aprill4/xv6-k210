@@ -31,5 +31,6 @@
 #define SYS_getcwd      25
 #define SYS_rename      26
 #define SYS_getppid		27
+#define SYS_times		28
 
 #endif

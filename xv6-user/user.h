@@ -22,7 +22,6 @@ int mkdir(const char *dirname);
 int chdir(const char *dirname);
 int dup(int fd);
 int getpid(void);
-int getppid(void);
 char* sbrk(int size);
 int sleep(int ticks);
 int uptime(void);
@@ -34,6 +33,9 @@ int remove(char *filename);
 int trace(int mask);
 int sysinfo(struct sysinfo *);
 int rename(char *old, char *new);
+
+int getppid(void);
+clock_t tiems(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
