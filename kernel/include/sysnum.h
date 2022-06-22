@@ -30,7 +30,10 @@
 #define SYS_readdir     24
 #define SYS_getcwd      25
 #define SYS_rename      26
+
 #define SYS_getppid		27
 #define SYS_times		28
+#define SYS_getmem		29
+
 
 #endif

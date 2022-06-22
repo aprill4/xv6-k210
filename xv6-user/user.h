@@ -35,7 +35,8 @@ int sysinfo(struct sysinfo *);
 int rename(char *old, char *new);
 
 int getppid(void);
-clock_t tiems(void);
+//clock_t times(void);
+int getmem(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

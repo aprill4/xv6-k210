@@ -72,6 +72,12 @@ sys_getppid(void)
 }
 
 uint64
+sys_getmem(void)
+{
+  return myproc()->sz;
+}
+
+uint64
 sys_getpid(void)
 {
   return myproc()->pid;

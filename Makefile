@@ -205,6 +205,7 @@ UPROGS=\
 	$U/_strace\
 	$U/_mv\
 	$U/_getppid_test\
+	$U/_getmem_test\
 
 
 	# $U/_forktest\
