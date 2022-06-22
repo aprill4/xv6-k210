@@ -46,7 +46,7 @@ struct tms {
   clock_t tms_stime;
   clock_t tms_cutime;
   clock_t cstime;
-}
+};
 
 // Per-process state
 struct proc {
