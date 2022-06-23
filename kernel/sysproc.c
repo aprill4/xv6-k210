@@ -74,7 +74,7 @@ sys_getppid(void)
 uint64
 sys_getmem(void)
 {
-  return myproc()->sz;
+  return myproc()->sz/1024;
 }
 
 uint64
