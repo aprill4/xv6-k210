@@ -43,5 +43,5 @@ entry("sysinfo");
 entry("rename");
 
 entry("getppid");
-entry("times");
+#entry("times");
 entry("getmem");
