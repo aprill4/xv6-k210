@@ -42,10 +42,10 @@ extern struct cpu cpus[NCPU];
 enum procstate { UNUSED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 struct tms {
-  clock_t tms_utime;
-  clock_t tms_stime;
-  clock_t tms_cutime;
-  clock_t cstime;
+  uint64 utime;
+  uint64 stime;
+  uint64 cutime;
+  uint64 cstime;
 };
 
 // Per-process state
@@ -60,6 +60,8 @@ struct proc {
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
 
+  uint64 iktime;               // Last time into kernel
+  uint64 oktime;               // Last time out of kernel
   struct tms proc_tms;
 
   // these are private to the process, so p->lock need not be held.

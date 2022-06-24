@@ -166,3 +166,18 @@ sys_trace(void)
   myproc()->tmask = mask;
   return 0;
 }
+
+uint64
+sys_times(void) {
+  
+  uint64 p;
+  if(argaddr(0, &p) < 0) {
+    return -1;
+  }
+
+  if (either_copyout(1, p, &myproc()->proc_tms, sizeof(struct tms)) < 0) {
+    return -1;
+  }
+
+  return r_time();
+}

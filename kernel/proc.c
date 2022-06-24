@@ -141,6 +141,13 @@ allocproc(void)
 found:
   p->pid = allocpid();
 
+  p->iktime = 0;
+  p->oktime = 0;
+  p->proc_tms.utime = 0;
+  p->proc_tms.stime = 0;
+  p->proc_tms.cutime = 0;
+  p->proc_tms.cstime = 0;
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == NULL){
     release(&p->lock);
@@ -501,6 +508,10 @@ wait(uint64 addr)
         if(np->state == ZOMBIE){
           // Found one.
           pid = np->pid;
+
+          p->proc_tms.cutime += np->proc_tms.cutime + np->proc_tms.utime;
+          p->proc_tms.cstime += np->proc_tms.cstime + np->proc_tms.stime;
+
           if(addr != 0 && copyout2(addr, (char *)&np->xstate, sizeof(np->xstate)) < 0) {
             release(&np->lock);
             release(&p->lock);
@@ -597,9 +608,13 @@ sched(void)
   if(intr_get())
     panic("sched interruptible");
 
+  p->proc_tms.stime += r_time() - p->iktime;
+
   intena = mycpu()->intena;
   swtch(&p->context, &mycpu()->context);
   mycpu()->intena = intena;
+
+  p->iktime = r_time();
 }
 
 // Give up the CPU for one scheduling round.
@@ -620,9 +635,11 @@ forkret(void)
 {
   // printf("run in forkret\n");
   static int first = 1;
-
+  
+  struct proc *p = myproc();
+  
   // Still holding p->lock from scheduler.
-  release(&myproc()->lock);
+  release(&p->lock);
 
   if (first) {
     // File system initialization must be run in the context of a
@@ -631,9 +648,10 @@ forkret(void)
     // printf("[forkret]first scheduling\n");
     first = 0;
     fat32_init();
-    myproc()->cwd = ename("/");
+    p->cwd = ename("/");
   }
 
+  p->iktime = r_time();
   usertrapret();
 }
 

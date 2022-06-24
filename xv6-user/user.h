@@ -6,6 +6,13 @@ struct stat;
 struct rtcdate;
 struct sysinfo;
 
+struct tms {
+  uint64 utime;
+  uint64 stime;
+  uint64 cutime;
+  uint64 cstime;
+};
+
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -35,7 +42,7 @@ int sysinfo(struct sysinfo *);
 int rename(char *old, char *new);
 
 int getppid(void);
-//clock_t times(void);
+uint64 times(struct tms *);
 int getmem(void);
 
 // ulib.c
