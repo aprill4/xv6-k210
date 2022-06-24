@@ -1,0 +1,13 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: abrasumente/riscv-qemu-gcc:latest
+    steps:
+      - name: Check QEMU version
+        run: qemu-system-riscv64 --version
