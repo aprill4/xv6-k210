@@ -12,7 +12,7 @@ test_times(void)
   {
     struct tms t;
     uint64 ret = times(&t);
-    printf("times: %p\n", ret);
+    printf("times: %d\n", ret);
     printf("t->utime: %d\n", t.utime);
     printf("t->stime: %d\n", t.stime);
     printf("t->cutime: %d\n", t.cutime);
@@ -24,7 +24,7 @@ test_times(void)
   {
     struct tms t;
     uint64 ret = times(&t);
-    printf("times: %p\n", ret);
+    printf("times: %d\n", ret);
     printf("t->utime: %d\n", t.utime);
     printf("t->stime: %d\n", t.stime);
     printf("t->cutime: %d\n", t.cutime);

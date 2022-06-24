@@ -7,7 +7,7 @@ getmem_test(void)
 {
   printf("getmem test\n");
 
-  printf("getmem: %p\n", getmem());
+  printf("getmem: %d\n", getmem());
 }
 
 int
