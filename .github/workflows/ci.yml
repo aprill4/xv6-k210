@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - '*'
 
 jobs:
   test:
@@ -11,5 +11,9 @@ jobs:
     container:
       image: abrasumente/riscv-qemu-gcc:latest
     steps:
+      - name: Checkout respository
+        uses: actions/checkout@v3
+      - name: Cat the README
+        run: cat README.md
       - name: Check QEMU version
         run: qemu-system-riscv64 --version
