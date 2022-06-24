@@ -228,13 +228,13 @@ fs: $(UPROGS)
 	echo "making fs image..."
 	dd if=/dev/zero of=fs.img bs=512k count=512
 	mkfs.vfat -F 32 fs.img
-	@sudo mount fs.img $(dst)
-	@if [ ! -d "$(dst)/bin" ]; then sudo mkdir $(dst)/bin; fi
-	@sudo cp README $(dst)/README
+	@mount fs.img $(dst)
+	@if [ ! -d "$(dst)/bin" ]; then mkdir $(dst)/bin; fi
+	@cp README $(dst)/README
 	@for file in $$( ls $U/_* ); do \
-		sudo cp $$file $(dst)/$${file#$U/_};\
-		sudo cp $$file $(dst)/bin/$${file#$U/_}; done
-	@sudo umount $(dst)
+		cp $$file $(dst)/$${file#$U/_};\
+		cp $$file $(dst)/bin/$${file#$U/_}; done
+	@umount $(dst)
 
 # Write mounted sdcard
 sdcard: userprogs
