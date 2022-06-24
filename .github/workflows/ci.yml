@@ -13,7 +13,9 @@ jobs:
     steps:
       - name: Checkout respository
         uses: actions/checkout@v3
-      - name: Cat the README
-        run: cat README.md
-      - name: Check QEMU version
-        run: qemu-system-riscv64 --version
+      - name: Check toolchain version
+        run: qemu-system-riscv64 --version && riscv64-unknown-elf-gcc --version
+      - name: Make filesystem image
+        run: make fs
+      - name: Run tests
+        run: python3 tester.py
