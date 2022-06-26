@@ -68,7 +68,7 @@ usertrap(void)
   
   // save user program counter.
   p->trapframe->epc = r_sepc();
-  
+
   if(r_scause() == 8){
     // system call
     if(p->killed)
@@ -88,6 +88,13 @@ usertrap(void)
     printf("\nusertrap(): unexpected scause %p pid=%d %s\n", r_scause(), p->pid, p->name);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     // trapframedump(p->trapframe);
+    p->killed = 1;
+  }
+
+  // check if the alarm is expired.
+  // TODO: What if overflow happens?
+  if(p->sched_alarm != 0 && p->sched_alarm <= r_time()) {
+    //printf("alarm triggered, kill\n");
     p->killed = 1;
   }
 

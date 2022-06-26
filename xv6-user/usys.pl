@@ -45,3 +45,4 @@ entry("rename");
 entry("getppid");
 entry("times");
 entry("getmem");
+entry("alarm");

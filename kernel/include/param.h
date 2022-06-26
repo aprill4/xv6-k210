@@ -14,6 +14,13 @@
 #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
 #define FSSIZE       1000  // size of file system in blocks
 #define MAXPATH      260   // maximum file path name
+
+#ifdef QEMU
+#define CLOCKFREQ    12500000
+#else
+#define CLOCKFREQ    6500000
+#endif
+
 #define INTERVAL     (390000000 / 200) // timer interrupt interval
 
 #endif

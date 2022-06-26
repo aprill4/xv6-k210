@@ -44,6 +44,7 @@ int rename(char *old, char *new);
 int getppid(void);
 uint64 times(struct tms *);
 int getmem(void);
+uint32 alarm(uint32);
 
 // ulib.c
 int stat(const char*, struct stat*);

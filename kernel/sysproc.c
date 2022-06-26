@@ -181,3 +181,24 @@ sys_times(void) {
 
   return r_time();
 }
+
+uint64
+sys_alarm(void) {
+  int seconds;
+  if(argint(0, &seconds) < 0) {
+    return -1;
+  }
+
+  if(seconds < 0) {
+    return -1;
+  }
+
+  uint64 sched_alarm = r_time() + CLOCKFREQ * seconds;
+  //printf("sched_alarm: %d\n", sched_alarm);
+  myproc()->sched_alarm = sched_alarm;
+
+  // FIXME: Return the number of seconds remaining until any
+  // previously scheduled alarm was due to be delivered, or zero if
+  // there was no previously scheduled alarm.
+  return -1;
+}

@@ -148,6 +148,8 @@ found:
   p->proc_tms.cutime = 0;
   p->proc_tms.cstime = 0;
 
+  p->sched_alarm = 0;
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == NULL){
     release(&p->lock);

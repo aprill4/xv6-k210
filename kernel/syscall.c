@@ -119,6 +119,7 @@ extern uint64 sys_rename(void);
 extern uint64 sys_times(void);
 extern uint64 sys_getppid(void);
 extern uint64 sys_getmem(void);
+extern uint64 sys_alarm(void);
 
 static uint64 (*syscalls[])(void) = {
   [SYS_fork]        sys_fork,
@@ -150,7 +151,8 @@ static uint64 (*syscalls[])(void) = {
 
   [SYS_getppid]     sys_getppid,
   [SYS_times]       sys_times,
-  [SYS_getmem]     sys_getmem,
+  [SYS_getmem]      sys_getmem,
+  [SYS_alarm]       sys_alarm,
 };
 
 static char *sysnames[] = {
@@ -183,7 +185,8 @@ static char *sysnames[] = {
 
   [SYS_getppid]     "getppid",
   [SYS_times]       "times",
-  [SYS_getmem]     "getmem",
+  [SYS_getmem]      "getmem",
+  [SYS_alarm]       "alarm",
 };
 
 void

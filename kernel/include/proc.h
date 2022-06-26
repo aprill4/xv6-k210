@@ -64,6 +64,8 @@ struct proc {
   uint64 oktime;               // Last time out of kernel
   struct tms proc_tms;
 
+  uint64 sched_alarm;          // Scheduled wakeup time (in r_time() ticks) (0 if not scheduled)
+
   // these are private to the process, so p->lock need not be held.
   uint64 kstack;               // Virtual address of kernel stack
   uint64 sz;                   // Size of process memory (bytes)
