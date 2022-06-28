@@ -20,10 +20,12 @@ test_alarm(void)
   }
   printf("----------------------------\n");
 
-  alarm(1);
+  alarm(3);
 
-  while (1) {}
-  printf("unreachable\n");
+  printf("going to sleep, see you 3 seconds later\n");
+  pause();
+  //while (1) {}
+  printf("now reachable\n");
 
 }
 

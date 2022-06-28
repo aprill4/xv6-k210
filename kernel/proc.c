@@ -149,6 +149,7 @@ found:
   p->proc_tms.cstime = 0;
 
   p->sched_alarm = 0;
+  p->sig = 0;
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == NULL){
@@ -819,3 +820,28 @@ procnum(void)
   return num;
 }
 
+void
+signal(struct proc *p, int sig)
+{
+  acquire(&p->sig_lock);
+  SET_SIG(p->sig, sig);
+  release(&p->sig_lock);
+}
+
+void
+check_timeout(uint ticks) {
+  struct proc *p;
+
+  for(p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if(p->sched_alarm != 0 && p->sched_alarm <= ticks) {
+      printf("timer goes off\n");
+      acquire(&p->sig_lock);
+      p->state = RUNNABLE;
+      p->sched_alarm = 0;
+      SET_SIG(p->sig, SIGALRM);
+      release(&p->sig_lock);
+    }
+    release(&p->lock);
+  }
+}

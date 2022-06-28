@@ -8,6 +8,7 @@
 #include "file.h"
 #include "fat32.h"
 #include "trap.h"
+#include "signal.h"
 
 // Saved registers for kernel context switches.
 struct context {
@@ -64,6 +65,8 @@ struct proc {
   uint64 oktime;               // Last time out of kernel
   struct tms proc_tms;
 
+  struct spinlock sig_lock;    // Lock for signal handling
+  uint64 sig;                  // Signals
   uint64 sched_alarm;          // Scheduled wakeup time (in r_time() ticks) (0 if not scheduled)
 
   // these are private to the process, so p->lock need not be held.
@@ -104,5 +107,6 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 uint64          procnum(void);
 void            test_proc_init(int);
+void            check_timeout(uint ticks);
 
 #endif

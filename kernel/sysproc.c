@@ -10,6 +10,7 @@
 #include "include/kalloc.h"
 #include "include/string.h"
 #include "include/printf.h"
+#include "include/timer.h"
 
 extern int exec(char *path, char **argv);
 
@@ -193,12 +194,30 @@ sys_alarm(void) {
     return -1;
   }
 
-  uint64 sched_alarm = r_time() + CLOCKFREQ * seconds;
-  //printf("sched_alarm: %d\n", sched_alarm);
-  myproc()->sched_alarm = sched_alarm;
+  //uint64 sched_alarm = r_time() + CLOCKFREQ * seconds;
+  uint64 sched_alarm = ticks + seconds * TICKS_PER_SEC;
+  struct proc *p = myproc();
+  acquire(&p->lock);
+  p->sched_alarm = sched_alarm;
+  release(&p->lock);
 
   // FIXME: Return the number of seconds remaining until any
   // previously scheduled alarm was due to be delivered, or zero if
   // there was no previously scheduled alarm.
   return -1;
+}
+
+void
+sys_pause(void)
+{
+  struct proc *p = myproc();
+
+  acquire(&p->sig_lock);
+  while(p->sig == 0){
+    if(myproc()->killed){
+      return;
+    }
+    sleep(&p->sig, &p->sig_lock);
+  }
+  release(&p->sig_lock);
 }

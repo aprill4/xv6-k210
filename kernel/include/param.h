@@ -21,6 +21,9 @@
 #define CLOCKFREQ    6500000
 #endif
 
-#define INTERVAL     (390000000 / 200) // timer interrupt interval
+#define TICKS_PER_SEC 10
+#define INTERVAL      (CLOCKFREQ / TICKS_PER_SEC)
+
+//#define INTERVAL     (390000000 / 200) // timer interrupt interval
 
 #endif

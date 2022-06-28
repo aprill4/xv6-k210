@@ -31,9 +31,11 @@ set_next_timeout() {
     sbi_set_timer(r_time() + INTERVAL);
 }
 
+
 void timer_tick() {
     acquire(&tickslock);
     ticks++;
+    check_timeout(ticks);
     wakeup(&ticks);
     release(&tickslock);
     set_next_timeout();

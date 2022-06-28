@@ -12,6 +12,7 @@
 #include "include/console.h"
 #include "include/timer.h"
 #include "include/disk.h"
+#include "include/signal.h"
 
 extern char trampoline[], uservec[], userret[];
 
@@ -88,13 +89,6 @@ usertrap(void)
     printf("\nusertrap(): unexpected scause %p pid=%d %s\n", r_scause(), p->pid, p->name);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     // trapframedump(p->trapframe);
-    p->killed = 1;
-  }
-
-  // check if the alarm is expired.
-  // TODO: What if overflow happens?
-  if(p->sched_alarm != 0 && p->sched_alarm <= r_time()) {
-    //printf("alarm triggered, kill\n");
     p->killed = 1;
   }
 

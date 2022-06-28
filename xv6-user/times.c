@@ -20,6 +20,7 @@ test_times(void)
   }
   printf("----------------------------\n");
 
+  sleep(3);
   long long ticks = 0x100000000;
   while (ticks--) {
     asm volatile("nop");

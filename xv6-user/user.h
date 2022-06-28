@@ -45,6 +45,7 @@ int getppid(void);
 uint64 times(struct tms *);
 int getmem(void);
 uint32 alarm(uint32);
+void pause(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -46,3 +46,4 @@ entry("getppid");
 entry("times");
 entry("getmem");
 entry("alarm");
+entry("pause");
