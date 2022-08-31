@@ -65,9 +65,10 @@ struct proc {
   uint64 oktime;               // Last time out of kernel
   struct tms proc_tms;
 
-  struct spinlock sig_lock;    // Lock for signal handling
-  uint64 sig;                  // Signals
-  uint64 sched_alarm;          // Scheduled wakeup time (in r_time() ticks) (0 if not scheduled)
+  struct spinlock sig_lock;           // Lock for signal handling
+  uint sig;                           // Signals
+  uint64 sched_alarm;                 // Scheduled wakeup time (in r_time() ticks) (0 if not scheduled)
+  sig_handler *sig_actions[NSIG];     // Signal actions
 
   // these are private to the process, so p->lock need not be held.
   uint64 kstack;               // Virtual address of kernel stack
@@ -75,6 +76,7 @@ struct proc {
   pagetable_t pagetable;       // User page table
   pagetable_t kpagetable;      // Kernel page table
   struct trapframe *trapframe; // data page for trampoline.S
+  struct sig_frame sig_frame; // frame for signal handling
   struct context context;      // swtch() here to run process
   struct file *ofile[NOFILE];  // Open files
   struct dirent *cwd;          // Current directory

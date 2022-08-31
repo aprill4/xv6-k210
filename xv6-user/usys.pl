@@ -47,3 +47,5 @@ entry("times");
 entry("getmem");
 entry("alarm");
 entry("pause");
+entry("signal");
+entry("rt_sigreturn");

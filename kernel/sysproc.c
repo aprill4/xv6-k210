@@ -221,3 +221,37 @@ sys_pause(void)
   }
   release(&p->sig_lock);
 }
+
+uint64
+sys_signal(void) {
+  uint sig;
+  uint64 addr;
+
+  if (arguint(0, &sig) < 0) {
+    return 0;
+  }
+
+  if (argaddr(1, &addr) < 0) {
+    return 0;
+  }
+
+  if (sig == 0 || sig > NSIG) {
+    panic("signal: invalid signal number"); 
+  }
+
+  // FIXME: Do we need locks?
+  struct proc *p = myproc();
+  sig_handler *old = p->sig_actions[sig - 1];
+
+  printf("signal: sig %d, addr %p\n", sig, addr);
+  p->sig_actions[sig - 1] = (sig_handler *)addr;
+
+  return (uint64)old;
+}
+
+void
+sys_rt_sigreturn(void) {
+  struct proc *p = myproc();
+  p->trapframe = p->sig_frame.old_tf;
+  // FIXME: Assert that proc will continue running
+}

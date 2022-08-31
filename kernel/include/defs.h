@@ -169,6 +169,7 @@ int             wcsncmp(wchar const *s1, wchar const *s2, int len);
 
 // syscall.c
 int             argint(int, int*);
+int             arguint(int, uint*);
 int             argstr(int, char*, int);
 int             argaddr(int, uint64 *);
 int             fetchstr(uint64, char*, int);

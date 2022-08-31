@@ -67,6 +67,14 @@ argint(int n, int *ip)
   return 0;
 }
 
+// Fetch the nth 32-bit system call argument.
+int
+arguint(int n, uint *ip)
+{
+  *ip = argraw(n);
+  return 0;
+}
+
 // Retrieve an argument as a pointer.
 // Doesn't check for legality, since
 // copyin/copyout will do that.
@@ -121,6 +129,8 @@ extern uint64 sys_getppid(void);
 extern uint64 sys_getmem(void);
 extern uint64 sys_alarm(void);
 extern uint64 sys_pause(void);
+extern uint64 sys_signal(void);
+extern uint64 sys_rt_sigreturn(void);
 
 static uint64 (*syscalls[])(void) = {
   [SYS_fork]        sys_fork,
@@ -155,6 +165,8 @@ static uint64 (*syscalls[])(void) = {
   [SYS_getmem]      sys_getmem,
   [SYS_alarm]       sys_alarm,
   [SYS_pause]       sys_pause,
+  [SYS_signal]      sys_signal,
+  [SYS_rt_sigreturn]      sys_rt_sigreturn,
 };
 
 static char *sysnames[] = {
@@ -190,6 +202,8 @@ static char *sysnames[] = {
   [SYS_getmem]      "getmem",
   [SYS_alarm]       "alarm",
   [SYS_pause]       "pause",
+  [SYS_signal]      "signal",
+  [SYS_rt_sigreturn]      "rt_sigreturn",
 };
 
 void

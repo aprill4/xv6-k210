@@ -24,6 +24,7 @@ test_alarm(void)
 
   printf("going to sleep, see you 3 seconds later\n");
   pause();
+  printf("ahh\n");
   //while (1) {}
   printf("now reachable\n");
 

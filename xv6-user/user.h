@@ -1,6 +1,7 @@
 #include "kernel/include/types.h"
 #include "kernel/include/stat.h"
 #include "kernel/include/fcntl.h"
+#include "kernel/include/signal.h"
 
 struct stat;
 struct rtcdate;
@@ -40,12 +41,15 @@ int remove(char *filename);
 int trace(int mask);
 int sysinfo(struct sysinfo *);
 int rename(char *old, char *new);
+void *memcpy(void *, const void *, uint);
+void *memcpy(void *, const void *, uint);
 
 int getppid(void);
 uint64 times(struct tms *);
 int getmem(void);
 uint32 alarm(uint32);
 void pause(void);
+sig_handler *signal(uint, sig_handler *);
 
 // ulib.c
 int stat(const char*, struct stat*);

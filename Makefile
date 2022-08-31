@@ -1,3 +1,15 @@
+# Serveal problems of this makefile
+# 1. ifdef/else blank line sensitive
+# 2. link error when targetting QEMU and K210 interchangably
+# 3. aren't aware of .h changes
+# 4. one could forget to `make fs`
+# 5. used `sudo` in makefile, making it unsable for root user, especially in Docker
+# 6. used `mount` in makefile, but some Docker environment doesn't support it under non-privileged mode.
+# 7. `sudo chmod 777` oh crap.
+
+# Some makefile unrelated issues
+# 1. adding a syscall involves changing many different files.
+
 #platform	:= k210
 platform	:= qemu
 # mode := debug
@@ -24,6 +36,7 @@ OBJS += \
   $K/proc.o \
   $K/swtch.o \
   $K/trampoline.o \
+  $K/sig_trampoline.o \
   $K/trap.o \
   $K/syscall.o \
   $K/sysproc.o \
@@ -164,7 +177,7 @@ tags: $(OBJS) _init
 ULIB = $U/ulib.o $U/usys.o $U/printf.o $U/umalloc.o
 
 _%: %.o $(ULIB)
-	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
+	$(LD) $(LDFLAGS) -N -e main -Ttext 0x4000 -o $@ $^
 	$(OBJDUMP) -S $@ > $*.asm
 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
 
@@ -208,6 +221,8 @@ UPROGS=\
 	$U/_getmem\
 	$U/_times\
 	$U/_alarm1\
+	$U/_signal1\
+	$U/_signal2\
 
 
 	# $U/_forktest\

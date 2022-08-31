@@ -36,6 +36,8 @@
 #define SYS_getmem		29
 #define SYS_alarm       30
 #define SYS_pause       31
+#define SYS_signal      32
+#define SYS_rt_sigreturn   33
 
 
 #endif

@@ -104,9 +104,10 @@
 
 #define PHYSTOP                 0x80600000
 
-// map the trampoline page to the highest address,
+// map the trampoline pages to the highest address,
 // in both user and kernel space.
 #define TRAMPOLINE              (MAXVA - PGSIZE)
+#define SIG_TRAMPOLINE          (MAXVA - 2 * PGSIZE)
 
 // map kernel stacks beneath the trampoline,
 // each surrounded by invalid guard pages.
