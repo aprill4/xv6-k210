@@ -101,16 +101,20 @@ filestat(struct file *f, uint64 addr)
   // struct proc *p = myproc();
   struct stat st;
   
-  if(f->type == FD_ENTRY){
+  if (f->ep->proc_vfs_type == PROC_VFS_PID_STAT) {
+    strncpy(st.name, "stat", 5);
+    st.dev = 0;
+    st.type = T_FILE;
+    st.size = 0;
+  } else if(f->type == FD_ENTRY){
     elock(f->ep);
     estat(f->ep, &st);
     eunlock(f->ep);
-    // if(copyout(p->pagetable, addr, (char *)&st, sizeof(st)) < 0)
-    if(copyout2(addr, (char *)&st, sizeof(st)) < 0)
-      return -1;
-    return 0;
   }
-  return -1;
+  // if(copyout(p->pagetable, addr, (char *)&st, sizeof(st)) < 0)
+  if(copyout2(addr, (char *)&st, sizeof(st)) < 0)
+    return -1;
+  return 0;
 }
 
 // Read from file f.
@@ -123,23 +127,49 @@ fileread(struct file *f, uint64 addr, int n)
   if(f->readable == 0)
     return -1;
 
-  switch (f->type) {
-    case FD_PIPE:
-        r = piperead(f->pipe, addr, n);
-        break;
-    case FD_DEVICE:
-        if(f->major < 0 || f->major >= NDEV || !devsw[f->major].read)
-          return -1;
-        r = devsw[f->major].read(1, addr, n);
-        break;
-    case FD_ENTRY:
-        elock(f->ep);
-          if((r = eread(f->ep, 1, addr, f->off, n)) > 0)
-            f->off += r;
-        eunlock(f->ep);
-        break;
-    default:
-      panic("fileread");
+  if (f->ep->proc_vfs_type == PROC_VFS_PID_STAT) {
+    if (f->off == 0) {
+      return 0;
+    }
+    f->off--;
+    
+    struct proc *p = findproc(f->ep->pid);
+
+    if (p == NULL) {
+      panic("fileread: pid is invalid");
+    }
+
+    char state = "USRRZ"[p->state];
+
+    char line[128];
+    sprintf(line, "%d (cmd) %c %d %d %d %d %d\n", p->pid, state, p->parent->pid,
+            p->proc_tms.utime, p->proc_tms.stime, p->proc_tms.cutime,
+            p->proc_tms.cstime, p->sz);
+    int len = strlen(line);
+    if (n < len) {
+      panic("reading part of proc stat");
+    }
+    copyout2(addr, line, len);
+    r = len;
+  } else {
+    switch (f->type) {
+      case FD_PIPE:
+          r = piperead(f->pipe, addr, n);
+          break;
+      case FD_DEVICE:
+          if(f->major < 0 || f->major >= NDEV || !devsw[f->major].read)
+            return -1;
+          r = devsw[f->major].read(1, addr, n);
+          break;
+      case FD_ENTRY:
+          elock(f->ep);
+            if((r = eread(f->ep, 1, addr, f->off, n)) > 0)
+              f->off += r;
+          eunlock(f->ep);
+          break;
+      default:
+        panic("fileread");
+    }
   }
 
   return r;
@@ -189,18 +219,54 @@ dirnext(struct file *f, uint64 addr)
 
   struct dirent de;
   struct stat st;
-  int count = 0;
-  int ret;
-  elock(f->ep);
-  while ((ret = enext(f->ep, &de, f->off, &count)) == 0) {  // skip empty entry
-    f->off += count * 32;
-  }
-  eunlock(f->ep);
-  if (ret == -1)
-    return 0;
 
-  f->off += count * 32;
-  estat(&de, &st);
+  // May you rest in dreamless slumber
+  if (f->ep->proc_vfs_type != PROC_VFS_INVALID) {
+    switch (f->ep->proc_vfs_type) {
+      case PROC_VFS_PROC_ROOT: {
+
+        if (f->off == 0) {
+          return 0;
+        }
+
+        int pid = getproc(--(f->off))->pid;
+        itoa(pid, st.name);
+        st.dev = 0;
+        st.type = T_DIR;
+        st.size = 0;
+
+      } break;
+
+      case PROC_VFS_PID_DIR: {
+
+        if (f->off-- == 0) {
+          return 0;
+        }
+
+        strncpy(st.name, "stat", 5);
+        st.dev = 0;
+        st.type = T_FILE;
+        st.size = 0;
+
+      } break;
+
+      default: panic("unhandled proc vfs type");
+    }
+  } else {
+    int count = 0;
+    int ret;
+    elock(f->ep);
+    while ((ret = enext(f->ep, &de, f->off, &count)) == 0) {  // skip empty entry
+      f->off += count * 32;
+    }
+    eunlock(f->ep);
+    if (ret == -1)
+      return 0;
+
+    f->off += count * 32;
+    estat(&de, &st);
+  }
+
   // if(copyout(p->pagetable, addr, (char *)&st, sizeof(st)) < 0)
   if(copyout2(addr, (char *)&st, sizeof(st)) < 0)
     return -1;

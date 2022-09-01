@@ -108,6 +108,8 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 uint64          procnum(void);
+struct proc*    getproc(int);
+struct proc*    findproc(int pid);
 void            test_proc_init(int);
 void            check_timeout(uint ticks);
 

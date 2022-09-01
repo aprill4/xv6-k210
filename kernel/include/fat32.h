@@ -23,6 +23,12 @@
 #define FAT32_MAX_PATH      260
 #define ENTRY_CACHE_NUM     50
 
+#define PROC_VFS_INVALID    0x0
+#define PROC_VFS_PROC_ROOT  0x1
+#define PROC_VFS_PID_DIR    0x2
+#define PROC_VFS_PID_STAT   0x3
+
+
 struct dirent {
     char  filename[FAT32_MAX_FILENAME + 1];
     uint8   attribute;
@@ -37,6 +43,9 @@ struct dirent {
 
     uint32  cur_clus;
     uint    clus_cnt;
+    
+    int     proc_vfs_type;
+    int     pid;
 
     /* for OS */
     uint8   dev;

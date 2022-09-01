@@ -69,6 +69,10 @@ static struct entry_cache {
 
 static struct dirent root;
 
+static int is_dirent_root(struct dirent *dp) {
+    return dp == &root;
+}
+
 /**
  * Read the Boot Parameter Block.
  * @return  0       if success
@@ -907,10 +911,59 @@ static struct dirent *lookup_path(char *path, int parent, char *name)
             eunlock(entry);
             return entry;
         }
-        if ((next = dirlookup(entry, name, 0)) == 0) {
-            eunlock(entry);
-            eput(entry);
-            return NULL;
+        if (is_dirent_root(entry) && strncmp(name, "proc", FAT32_MAX_FILENAME) == 0) {
+            struct dirent *ep = eget(entry, name) ;
+            if (ep->valid != 1) {
+                ep->valid = 1;
+                ep->parent = edup(entry);
+                ep->attribute = ATTR_DIRECTORY;
+                ep->proc_vfs_type = PROC_VFS_PROC_ROOT;
+            }
+            next = ep;
+        } else if (entry->proc_vfs_type != PROC_VFS_INVALID) {
+            next = NULL;
+            switch (entry->proc_vfs_type) {
+                case PROC_VFS_PROC_ROOT: {
+                    struct dirent *ep = eget(entry, name) ;
+                    int pid = atoi(name);
+                    if (findproc(pid) == NULL) {
+                        eunlock(entry);
+                        eput(entry);
+                        return NULL;
+                    }
+                    if (ep->valid != 1) {
+                        ep->valid = 1;
+                        ep->parent = edup(entry);
+                        ep->attribute = ATTR_DIRECTORY;
+                        ep->proc_vfs_type = PROC_VFS_PID_DIR;
+                        ep->pid = pid;
+                    }
+                    next = ep;
+                } break;
+
+                case PROC_VFS_PID_DIR: {
+                    if (strncmp(name, "stat", 4) != 0) {
+                        panic("no such file, only have stat");
+                    }
+                    struct dirent *ep = eget(entry, name);
+                    if (ep->valid != 1) {
+                        ep->valid = 1;
+                        ep->parent = edup(entry);
+                        ep->attribute = 0;
+                        ep->proc_vfs_type = PROC_VFS_PID_STAT;
+                        ep->pid = entry->pid;
+                    }
+                    next = ep;
+                } break;
+
+                default: panic("unhandled proc vfs type");
+            }
+        } else {
+            if ((next = dirlookup(entry, name, 0)) == 0) {
+                eunlock(entry);
+                eput(entry);
+                return NULL;
+            }
         }
         eunlock(entry);
         eput(entry);

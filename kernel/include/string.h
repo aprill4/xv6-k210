@@ -14,5 +14,8 @@ void            wnstr(wchar *dst, char const *src, int len);
 void            snstr(char *dst, wchar const *src, int len);
 int             wcsncmp(wchar const *s1, wchar const *s2, int len);
 char*           strchr(const char *s, char c);
+char*           itoa(int value, char *str);
+int             atoi(const char *s);
+void            sprintf(char *str, char *fmt, ...);
 
 #endif

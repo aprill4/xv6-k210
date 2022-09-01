@@ -907,3 +907,37 @@ check_timeout(uint ticks) {
     }
   }
 }
+
+struct proc*
+getproc(int index)
+{
+  int num = 0;
+  struct proc *p;
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    if (p->state != UNUSED) {
+      if (num == index) {
+        return p;
+      }
+      num++;
+    }
+  }
+
+  panic("getproc: out of bound");
+
+  return NULL;
+}
+
+struct proc*
+findproc(int pid)
+{
+  struct proc *p;
+
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(p->pid == pid && p->state != UNUSED){
+      return p;
+    }
+  }
+
+  return NULL;
+}

@@ -1,4 +1,6 @@
+#include <stdarg.h>
 #include "include/types.h"
+#include "include/printf.h"
 
 void*
 memset(void *dst, int c, uint n)
@@ -140,4 +142,140 @@ strchr(const char *s, char c)
     if(*s == c)
       return (char*)s;
   return 0;
+}
+
+// Converts an integer `value` to a null-terminated
+// string and stores the result in the array given
+// by `str`
+char *itoa(int value, char *str) {
+  char *p = str;
+  if (value == 0x80000000) {
+    strncpy(p, "-2147483648", 12);
+    return str;
+  }
+
+  if (value == 0) {
+    strncpy(p, "0", 2);
+    return str;
+  }
+
+  if (value < 0) {
+    *p++ = '-';
+    value = -value;
+  }
+
+  char digits[11];
+  int len = 0;
+
+  while (value) {
+    digits[len++] = (value % 10) + '0';
+    value /= 10;
+  }
+
+  while (len--) {
+    *p++ = digits[len];
+  }
+
+  *p = '\0';
+
+  return str;
+}
+
+int
+atoi(const char *s)
+{
+  int n;
+  int neg = 1;
+  if (*s == '-') {
+    s++;
+    neg = -1;
+  }
+  n = 0;
+  while('0' <= *s && *s <= '9')
+    n = n*10 + *s++ - '0';
+  return n * neg;
+}
+
+static char digits[] = "0123456789abcdef";
+
+static char*
+sprintint(char *str, int xx, int base, int sign)
+{
+  char buf[16];
+  int i;
+  uint x;
+
+  if(sign && (sign = xx < 0))
+    x = -xx;
+  else
+    x = xx;
+
+  i = 0;
+  do {
+    buf[i++] = digits[x % base];
+  } while((x /= base) != 0);
+
+  if(sign)
+    buf[i++] = '-';
+
+  while(--i >= 0)
+    *str++ = buf[i];
+
+  return str;
+}
+
+void
+sprintf(char *str, char *fmt, ...)
+{
+  va_list ap;
+  int i, c;
+  char *s;
+
+  if (fmt == 0)
+    panic("null fmt");
+
+  va_start(ap, fmt);
+  for(i = 0; (c = fmt[i] & 0xff) != 0; i++){
+    if(c != '%'){
+      *str++ = c;
+      continue;
+    }
+    c = fmt[++i] & 0xff;
+    if(c == 0)
+      break;
+    switch(c){
+    case 'c':
+      *str++ = (char)va_arg(ap, int);
+      break;
+    case 'd':
+      str = sprintint(str, va_arg(ap, int), 10, 1);
+      break;
+    case 'x':
+      str = sprintint(str, va_arg(ap, int), 16, 1);
+      break;
+    case 'p': {
+      int i;
+      uint64 x = va_arg(ap, uint64);
+      *str++ = '0';
+      *str++ = 'x';
+      for (i = 0; i < (sizeof(uint64) * 2); i++, x <<= 4)
+        *str++ = (digits[x >> (sizeof(uint64) * 8 - 4)]);
+    } break;
+    case 's':
+      if((s = va_arg(ap, char*)) == 0)
+        s = "(null)";
+      for(; *s; s++)
+        *str++ = *s;
+      break;
+    case '%':
+      *str++ = '%';
+      break;
+    default:
+      // Print unknown % sequence to draw attention.
+      *str++ = '%';
+      *str++ = c;
+      break;
+    }
+  }
+  *str++ = '\0';
 }

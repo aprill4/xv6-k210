@@ -207,6 +207,12 @@ sys_open(void)
   f->readable = !(omode & O_WRONLY);
   f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
 
+  switch (f->ep->proc_vfs_type) {
+    case PROC_VFS_PROC_ROOT: f->off = procnum(); break;
+    case PROC_VFS_PID_STAT:
+    case PROC_VFS_PID_DIR: f->off = 1; break;
+  }
+
   eunlock(ep);
 
   return fd;
