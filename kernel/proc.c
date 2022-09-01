@@ -695,10 +695,7 @@ sleep(void *chan, struct spinlock *lk)
   p->chan = chan;
   p->state = SLEEPING;
 
-  printf("pid=%d, chan=%p going to sleep\n", p->pid, p->chan);
-
   sched();
-  printf("pid=%d, chan=%p, awaken\n", p->pid, p->chan);
 
 
   // Tidy up.
@@ -773,26 +770,20 @@ kill_new(struct proc *p, int sig)
   // handle the signal
   //   -> setup a signal handler frame
   //   -> fill in that frame
+  p->sig = sig; // FIXME: THIS IS WRONG
   p->sig_frame.old_tf = p->trapframe;
   p->sig_frame.tf->a0 = 42;
   p->sig_frame.tf->a1 = (uint64)(SIG_TRAMPOLINE  + ((uint64)default_signal_handler - (uint64)sig_trampoline));
   p->sig_frame.tf->epc = (uint64)(SIG_TRAMPOLINE + ((uint64)sig_handler_wrapper - (uint64)sig_trampoline));
   p->sig_frame.tf->sp = p->trapframe->sp;
-  p->sig_frame.tf->kernel_satp = p->trapframe->kernel_satp;
-  p->sig_frame.tf->kernel_sp = p->trapframe->kernel_sp;
-  p->sig_frame.tf->kernel_trap = p->trapframe->kernel_trap;
-  p->sig_frame.tf->kernel_hartid = p->trapframe->kernel_hartid;
 
   p->trapframe = p->sig_frame.tf;
-  printf("finish set up sig frame\n");
 
   // wakeup doesn't sched that process immediately
   // FIXME: the signalled process doesn't necessarily
   // sleep on &p->sig. but in the alarm/pause case, it is.
   release(&p->lock);
-  printf("released the lock\n");
   wakeup(&p->sig);
-  printf("back here\n");
 
   return 0; // FIXME: Useless return value?
 }

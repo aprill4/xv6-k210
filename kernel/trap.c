@@ -88,7 +88,7 @@ usertrap(void)
   else {
     printf("\nusertrap(): unexpected scause %p pid=%d %s\n", r_scause(), p->pid, p->name);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
-    // trapframedump(p->trapframe);
+    trapframedump(p->trapframe);
     p->killed = 1;
   }
 
@@ -139,6 +139,7 @@ usertrapret(void)
   w_sstatus(x);
 
   // set S Exception Program Counter to the saved user pc.
+  //printf("usertrapret: epc=%p\n", p->trapframe->epc);
   w_sepc(p->trapframe->epc);
 
   // tell trampoline.S the user page table to switch to.

@@ -17,3 +17,4 @@ sig_handler_wrapper:
 default_signal_handler:
     li a0, -1
     li a7, SYS_exit
+    ecall
