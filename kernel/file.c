@@ -141,10 +141,16 @@ fileread(struct file *f, uint64 addr, int n)
 
     char state = "USRRZ"[p->state];
 
+    uint64 utime = p->proc_tms.utime + p->proc_tms.cutime;
+    uint64 stime = p->proc_tms.stime + p->proc_tms.cstime;
+    int utime_sec = utime / CLOCKFREQ;
+    int stime_sec = stime / CLOCKFREQ;
+    //printf("dbg: utime_sec=%d, stime_sec=%d\n", utime_sec, stime_sec);
+
     char line[128];
-    sprintf(line, "%d (cmd) %c %d %d %d %d %d\n", p->pid, state, p->parent->pid,
+    sprintf(line, "%d (cmd) %c %d %d %d %d %d utime:%d, stime:%d\n", p->pid, state, p->parent->pid,
             p->proc_tms.utime, p->proc_tms.stime, p->proc_tms.cutime,
-            p->proc_tms.cstime, p->sz);
+            p->proc_tms.cstime, p->sz, utime_sec, stime_sec);
     int len = strlen(line);
     if (n < len) {
       panic("reading part of proc stat");
