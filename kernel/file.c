@@ -148,7 +148,8 @@ fileread(struct file *f, uint64 addr, int n)
     //printf("dbg: utime_sec=%d, stime_sec=%d\n", utime_sec, stime_sec);
 
     char line[128];
-    sprintf(line, "%d (cmd) %c %d %d %d %d %d utime:%d, stime:%d\n", p->pid, state, p->parent->pid,
+    int ppid = (p->parent == NULL ? -1 : p->parent->pid);
+    sprintf(line, "%d (cmd) %c %d %d %d %d %d utime:%d, stime:%d\n", p->pid, state, ppid,
             p->proc_tms.utime, p->proc_tms.stime, p->proc_tms.cutime,
             p->proc_tms.cstime, p->sz, utime_sec, stime_sec);
     int len = strlen(line);

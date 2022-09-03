@@ -144,6 +144,7 @@ allocproc(void)
 found:
   p->pid = allocpid();
 
+  p->parent = NULL;
   p->iktime = 0;
   p->oktime = 0;
   p->proc_tms.utime = 0;

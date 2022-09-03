@@ -223,6 +223,7 @@ UPROGS=\
 	$U/_alarm1\
 	$U/_signal1\
 	$U/_signal2\
+	$U/_ps\
 
 
 	# $U/_forktest\
